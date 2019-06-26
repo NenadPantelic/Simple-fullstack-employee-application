@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { Table } from 'react-bootstrap';
-import {ButtonToolbar, Button} from 'react-bootstrap';
+import { ButtonToolbar, Button } from 'react-bootstrap';
 import { AddDepartment } from './AddDepartment';
- 
+import { EditDepartment } from './EditDepartment';
+
 export class Department extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { deps: [], modalShow: false };
+        this.state = { deps: [], modalShow: false, editModalShow: false };
     }
 
     refreshList() {
@@ -23,12 +24,27 @@ export class Department extends Component {
         this.refreshList();
     }
 
-    componentDidUpdate(){
+    componentDidUpdate() {
         this.refreshList();
     }
+
+    deleteDepartment(depid){
+        
+        if(window.confirm("Are you sure with this action?")){
+            fetch("http://localhost:51316/api/Department/" + depid,
+            {
+                method:"DELETE",
+                headers:{
+                    "Accept":"application/json",
+                    "Content-Type":"application/json"
+                }
+            });
+        }
+    }
     render() {
-        const { deps } = this.state;
-        let modalClose = () => this.setState({ modalShow: false });
+        const { deps, depid, depname } = this.state;
+        let modalClose = () => this.setState({ modalShow: false});
+        let editModalClose = () => this.setState({ editModalShow: false});
         return (
             <div>
                 <Table className="mt-4" striped bordered hover size="sm">
@@ -36,6 +52,7 @@ export class Department extends Component {
                         <tr>
                             <th> DepartmentID</th>
                             <th> DepartmentName</th>
+                            <th> Options </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -43,7 +60,30 @@ export class Department extends Component {
                             <tr key={dep.DepartmentID}>
                                 <td> {dep.DepartmentID}</td>
                                 <td> {dep.DepartmentName}</td>
+                                <td>
+                                <Button
+                                    variant="info"
+                                    className="mr-2"
+                                    onClick={() => this.setState({ editModalShow: true , depid:dep.DepartmentID, depname:dep.DepartmentName})}
+                                >
+                                    Edit
+                                </Button>
 
+                                <Button
+                                    variant="danger"
+                                    className="mr-2"
+                                    onClick={() => this.deleteDepartment(dep.DepartmentID)}
+                                >
+                                    Delete 
+                                </Button>
+
+                                <EditDepartment
+                                    show={this.state.editModalShow}
+                                    onHide={editModalClose}
+                                    depid={depid}
+                                    depname={depname}
+                                />
+                                </td>
 
                             </tr>)}
                     </tbody>

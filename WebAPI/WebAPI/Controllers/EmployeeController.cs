@@ -19,7 +19,7 @@ namespace WebAPI.Controllers
         {
 
             DataTable table = new DataTable();
-            string query = @"SELECT EmployeeID, EmployeeName, Department, Mail, convert(varchar(10), DateOfJoining, 120) FROM Employee;;";
+            string query = @"SELECT EmployeeID, EmployeeName, Department, Mail, convert(varchar(10), DateOfJoining, 120) as DateOfJoining FROM Employee;";
             using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["EmployeeAppDB"].ConnectionString))
             using (var cmd = new SqlCommand(query, con))
             using (var da = new SqlDataAdapter(cmd))
@@ -33,12 +33,16 @@ namespace WebAPI.Controllers
 
         public string Post(Employee employee)
         {
+            System.Diagnostics.Debug.WriteLine(employee.EmployeeID);
+
 
             try
             {
                 DataTable table = new DataTable();
                 string query = @"INSERT INTO Employee(EmployeeName, Department, Mail, DateOfJoining) VALUES('"
-                + employee.EmployeeName + "," + employee.Department + "," + employee.Mail + "," + employee.DateOfJoining + @"');";
+                + employee.EmployeeName + "','" + employee.Department + "','" + employee.Mail + "','" + employee.DateOfJoining + @"');";
+                System.Diagnostics.Debug.WriteLine(query);
+
                 using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["EmployeeAppDB"].ConnectionString))
                 using (var cmd = new SqlCommand(query, con))
                 using (var da = new SqlDataAdapter(cmd))
@@ -64,7 +68,7 @@ namespace WebAPI.Controllers
             try
             {
                 DataTable table = new DataTable();
-                string query = @"UPDATE Employee SET EmployeeName = '" + employee.EmployeeName  + "', Department = '" +
+                string query = @"UPDATE Employee SET EmployeeName = '" + employee.EmployeeName + "', Department = '" +
                      employee.Department + "', Mail = '" + employee.Mail + "', DateOfJoining = '" + employee.DateOfJoining + "'WHERE" +
                      " EmployeeID = '" + employee.EmployeeID + "';";
                 using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["EmployeeAppDB"].ConnectionString))
